@@ -1,25 +1,12 @@
-project.tasks.register('parse', Parse)
-
 configurations {
     rawData
 }
 
-List<String> rawSubprojects = new ArrayList<String>();
-rawSubprojects.add("annotations");
-rawSubprojects.add("transcriptions");
-rawSubprojects.add("segmentation");
-rawSubprojects.add("alignment");
-
 dependencies {
-    rawData 'com.audeering.data.iemocap.raw:iemocap:1.0.0'
-    for (int session = 1; session < 6; session++) {
-        for (String item : rawSubprojects) {
-            rawData group: 'com.audeering.data.iemocap.raw', 
-            name: "Session$session-$item", 
-            version: '1.0.0', 
-            ext: 'zip'
-        }
-    }
+    rawData group: "com.github.cheyneycomputerscience.crema-d.raw",
+        name: "metadata",
+        version: "v1.0.0",
+        ext: "zip"
  }
 
 unpackData {
@@ -27,14 +14,9 @@ unpackData {
     destDir = layout.buildDirectory.dir('unpacked')
 }
 
-parse {
-    srcDir = unpackData.destDir
-    destDir = layout.buildDirectory.dir('parsed')
-}
-
 convertToUnifiedFormat {
     dataDir = unpackData.destDir
-    metadataDir = parse.destDir
+    metadataDir = unpackData.destDir
 }
 
 task packageMetadata(type: Zip) {
