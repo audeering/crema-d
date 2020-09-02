@@ -1,0 +1,2 @@
+audata>=0.6.3
+asr_symbols>=0.5.6

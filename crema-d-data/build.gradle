@@ -1,0 +1,3 @@
+dependencies {
+    data group: 'com.github.cheyneycomputerscience.crema-d.raw', name: 'crema-d', version: '1.0.0'
+}

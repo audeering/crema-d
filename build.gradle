@@ -1,0 +1,21 @@
+plugins {
+    id 'com.audeering.data'
+    id 'org.ajoberstar.grgit' version '4.0.2'
+}
+
+allprojects {
+    apply plugin: 'com.audeering.data'
+    group 'com.github.cheyneycomputerscience.crema-d'
+    version grgit.describe()
+    data {
+        description rootProject.file('DESCRIPTION').text.split('\n')[0]
+        accessLevel 'public'
+        licenseName 'Open Data'
+        licenseUrl 'https://opendatacommons.org/licenses/odbl/1-0/'
+        url 'https://github.com/CheyneyComputerScience/CREMA-D'
+    }
+}
+
+dependencies {
+    data subprojects
+}
