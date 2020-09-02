@@ -5,7 +5,7 @@ plugins {
 
 allprojects {
     apply plugin: 'com.audeering.data'
-    group 'com.github.cheyneycomputerscience.crema-d'
+    group 'com.audeering.data.crema-d'
     version grgit.describe()
     data {
         description rootProject.file('DESCRIPTION').text.split('\n')[0]
