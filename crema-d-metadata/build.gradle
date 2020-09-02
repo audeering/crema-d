@@ -5,7 +5,7 @@ configurations {
 dependencies {
     rawData group: "com.github.cheyneycomputerscience.crema-d.raw",
         name: "metadata",
-        version: "v1.0.0",
+        version: "1.0.0",
         ext: "zip"
  }
 
