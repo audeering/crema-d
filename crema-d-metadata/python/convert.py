@@ -116,9 +116,8 @@ def convert(
         minimum=0,
         maximum=1
     )
-
     db.schemes['speaker'] = audata.Scheme(
-        labels=metadata.to_dict()
+        labels=metadata.to_dict(orient='index')
     )
 
     ##########
