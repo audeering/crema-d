@@ -129,7 +129,7 @@ def convert(
     db.tables['speaker']['speaker'] = audata.Column(
         scheme_id='speaker'
     )
-    db.tables['speaker']['speaker'].set(summarized['Actor'])
+    db.tables['speaker']['speaker'].set(summarized['Actor'].astype(int))
 
     db.tables['sentence'] = audata.Table(
         files=summarized.index
