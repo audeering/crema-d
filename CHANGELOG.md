@@ -1,6 +1,11 @@
 Changelog
 =========
 
+Version 1.0.4 (2021/02/02)
+--------------------------
+
+* Added: conversion to new audb format
+
 Version 1.0.3 (2020/09/14)
 --------------------------
 
