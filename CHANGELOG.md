@@ -1,6 +1,11 @@
 Changelog
 =========
 
+Version 1.0.5 (2021/09/23)
+--------------------------
+
+* Added: author and license information
+
 Version 1.0.4 (2021/02/02)
 --------------------------
 
