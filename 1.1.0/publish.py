@@ -6,7 +6,7 @@ build_dir = '../build'
 
 repository = audb.Repository(
     name='data-public-local',
-    host='https://audeering.jfrog.io/artifactory',
+    host='https://artifactory.audeering.com/artifactory',
     backend='artifactory',
 )
 audb.publish(
