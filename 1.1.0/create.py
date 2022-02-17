@@ -1,6 +1,4 @@
 import json
-import shutil
-import os
 
 import audb
 import audeer
@@ -8,21 +6,19 @@ import audformat
 
 name = 'crema-d'
 previous_version = '1.0.5'
-source_dir = '../source_dir'
-source_dir = audeer.mkdir(source_dir)
 
 build_dir = '../build'
 build_dir = audeer.mkdir(build_dir)
 
 audb.load_to(
-    source_dir,
+    build_dir,
     name,
     version=previous_version,
     num_workers=8,
     cache_root=None,
     verbose=True
 )
-db = audformat.Database.load(source_dir)
+db = audformat.Database.load(build_dir)
 
 with open('speaker_splits.json', 'r') as fp:
     speaker_splits = json.load(fp)
@@ -54,11 +50,4 @@ for split, speakers in speaker_splits.items():
 
 db.drop_tables('emotion')
 
-all_speakers = full_speaker_df['speaker'].unique()
-for speaker in all_speakers:
-    speaker_dir = str(speaker)
-    shutil.copytree(
-        os.path.join(source_dir, speaker_dir),
-        os.path.join(build_dir, speaker_dir),
-    )
 db.save(build_dir)
