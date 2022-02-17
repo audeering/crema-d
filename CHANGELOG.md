@@ -1,10 +1,11 @@
 Changelog
 =========
 
-Version 1.1.0 (2022/02/16)
+Version 1.1.0 (2022/02/17)
 --------------------------
 
-* Added: Unofficial speaker-independent train, dev, test splits
+* Added: Unofficial speaker-independent train, dev, test splits for each rating modality and the desired emotion
+* Removed: Tables `emotion`, `emotion.face`, `emotion.voice`, `emotion.face`
 
 Version 1.0.5 (2021/09/23)
 --------------------------
