@@ -118,7 +118,7 @@ def main():
                 gold_standard_description = (
                     'Gold standard for emotion '
                     f'for the {modality} modality, {split} split.')
-                # Create votes table only for non-excluded values
+                # Add to description that we filter out problem samples
                 if len(problem_samples_df) > 0:
                     votes_description = f'{votes_description} {problem_sample_post_fix}'
                     emotion_table_description = f'{emotion_table_description} {problem_sample_post_fix}'
