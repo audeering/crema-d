@@ -85,6 +85,11 @@ def main():
     for split in splits:
         for modality in modalities:
             table = f'emotion.{modality}.{split}'
+            # Treat the voice modality as the default
+            if modality == 'voice':
+                new_table_name = f'emotion.categories.{split}'
+            else:
+                new_table_name = f'emotion.categories.{modality}.{split}'
             modality_df = db[table].get()
 
             emotion_df = modality_df[~modality_df.index.isin(problem_samples)]
@@ -99,7 +104,9 @@ def main():
                     old_description = db[table].description
                     db[table].description = f'{old_description} {problem_sample_post_fix}'
                     db[table].drop_files(problem_samples, inplace=True)
-
+                # Rename table
+                db[new_table_name] = db[table]
+                db.drop_tables(table)
             # For the other modalities, handle votes, winning emotion, and gold standard tables
             else:
                 # Descriptions for tables
@@ -109,7 +116,7 @@ def main():
                     f'the {modality} modality, {split} split.'
                 )
                 gold_standard_description = (
-                    'Gold standard for the emotion  '
+                    'Gold standard for emotion '
                     f'for the {modality} modality, {split} split.')
                 # Create votes table only for non-excluded values
                 if len(problem_samples_df) > 0:
@@ -117,22 +124,22 @@ def main():
                     emotion_table_description = f'{emotion_table_description} {problem_sample_post_fix}'
                     gold_standard_description = f'{gold_standard_description} {problem_sample_post_fix}'
 
-                db[f'emotion.{modality}.{split}.votes'] = audformat.Table(
+                db[f'{new_table_name}.votes'] = audformat.Table(
                     emotion_df.index, split_id=split,
                     description=votes_description
                 )
                 for raw_col, class_label in emotion_label_mapping.items():
                     votes = votes_df.loc[emotion_df.index]
                     votes = votes[votes['modality']==modality]
-                    db[f'emotion.{modality}.{split}.votes'][class_label] = audformat.Column(
+                    db[f'{new_table_name}.votes'][class_label] = audformat.Column(
                         scheme_id='votes'
                     )
-                    db[f'emotion.{modality}.{split}.votes'][class_label].set(
+                    db[f'{new_table_name}.votes'][class_label].set(
                         votes[raw_col]
                     )
 
                 # Rename columns to make it clear each emotion was chosen equally often
-                db[f'emotion.{modality}.{split}'] = audformat.Table(
+                db[new_table_name] = audformat.Table(
                     index=emotion_df.index, split_id=split,
                     description=emotion_table_description
                 )
@@ -144,24 +151,27 @@ def main():
                     # Only add column if it exists in previous version
                     if emo_col not in emotion_df.columns:
                         break
-                    db[f'emotion.{modality}.{split}'][f'emotion.{i}'] = audformat.Column(
+                    db[new_table_name][f'emotion.{i}'] = audformat.Column(
                         scheme_id='emotion'
                     )
-                    db[f'emotion.{modality}.{split}'][f'emotion.{i}'].set(
+                    db[new_table_name][f'emotion.{i}'].set(
                         emotion_df[emo_col]
                     )
-                    db[f'emotion.{modality}.{split}'][f'emotion.{i}.level'] = audformat.Column(
+                    db[new_table_name][f'emotion.{i}.level'] = audformat.Column(
                         scheme_id='emotion.value'
                     )
-                    db[f'emotion.{modality}.{split}'][f'emotion.{i}.level'].set(
+                    db[new_table_name][f'emotion.{i}.level'].set(
                         emotion_df[f'{emo_col}.level']
                     )
-                db[f'emotion.{modality}.{split}'][f'emotion.agreement'] = audformat.Column(
+                db[new_table_name][f'emotion.agreement'] = audformat.Column(
                     scheme_id='emotion.agreement'
                 )
-                db[f'emotion.{modality}.{split}'][f'emotion.agreement'].set(
+                db[new_table_name][f'emotion.agreement'].set(
                     emotion_df[f'emotion.agreement']
                 )
+                # Remove table with old name
+                db.drop_tables(table)
+
                 # Add gold standard tables
                 # Set gold standard to no agreement if there is more than one emotion with
                 # the most number of votes
@@ -169,27 +179,27 @@ def main():
                 gold_standard.loc[~emotion_df['emotion.1'].isna()] = 'no_agreement'
                 gold_standard_level = emotion_df.loc[gold_standard.index, 'emotion.level']
                 gold_standard_agreement = emotion_df.loc[gold_standard.index, 'emotion.agreement']
-                db[f'emotion.{modality}.{split}.gold_standard'] = audformat.Table(
+                db[f'{new_table_name}.gold_standard'] = audformat.Table(
                     gold_standard.index, split_id=split,
                     description=gold_standard_description
                 )
-                db[f'emotion.{modality}.{split}.gold_standard']['emotion'] = audformat.Column(
-                    scheme_id='emotion', description='Emotion category that was voted for most often, or no_agreement'
+                db[f'{new_table_name}.gold_standard']['emotion'] = audformat.Column(
+                    scheme_id='emotion', description='Emotion category that was voted for most often, or no_agreement '
                                                      'if there was more than one winning category.'
                 )
-                db[f'emotion.{modality}.{split}.gold_standard']['emotion'].set(
+                db[f'{new_table_name}.gold_standard']['emotion'].set(
                     gold_standard
                 )
-                db[f'emotion.{modality}.{split}.gold_standard']['emotion.level'] = audformat.Column(
+                db[f'{new_table_name}.gold_standard']['emotion.level'] = audformat.Column(
                     scheme_id='emotion.value', description='Gold standard of the emotion level for the winning emotion.'
                 )
-                db[f'emotion.{modality}.{split}.gold_standard']['emotion.level'].set(
+                db[f'{new_table_name}.gold_standard']['emotion.level'].set(
                     gold_standard_level
                 )
-                db[f'emotion.{modality}.{split}.gold_standard']['emotion.agreement'] = audformat.Column(
+                db[f'{new_table_name}.gold_standard']['emotion.agreement'] = audformat.Column(
                     scheme_id='emotion.agreement', description='Rater agreement of the emotion for the winning emotion.'
                 )
-                db[f'emotion.{modality}.{split}.gold_standard']['emotion.agreement'].set(
+                db[f'{new_table_name}.gold_standard']['emotion.agreement'].set(
                     gold_standard_agreement
                 )
 
