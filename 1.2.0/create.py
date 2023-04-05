@@ -74,6 +74,14 @@ def main():
         labels=sorted(emotion_labels + ['no_agreement'])
     )
 
+    # Rename scheme for emotion.value to emotion.level to match column name
+    db.schemes['emotion.level'] = audformat.Scheme(
+        dtype=float, minimum=0, maximum=100, description='Level of emotional expression. A high value corresponds to a '
+                                                         'strong emotional expression for the associated '
+                                                         'emotion label.'
+    )
+    del db.schemes['emotion.value']
+
     current_dir = os.path.dirname(__file__)
     rater_votes_path = os.path.join(current_dir, 'tabulatedVotes.csv')
     votes_df = pd.read_csv(rater_votes_path)
@@ -158,17 +166,11 @@ def main():
                         emotion_df[emo_col]
                     )
                     db[new_table_name][f'emotion.{i}.level'] = audformat.Column(
-                        scheme_id='emotion.value'
+                        scheme_id='emotion.level'
                     )
                     db[new_table_name][f'emotion.{i}.level'].set(
                         emotion_df[f'{emo_col}.level']
                     )
-                db[new_table_name][f'emotion.agreement'] = audformat.Column(
-                    scheme_id='emotion.agreement'
-                )
-                db[new_table_name][f'emotion.agreement'].set(
-                    emotion_df[f'emotion.agreement']
-                )
                 # Remove table with old name
                 db.drop_tables(table)
 
@@ -178,6 +180,8 @@ def main():
                 gold_standard = emotion_df['emotion'].astype('str')
                 gold_standard.loc[~emotion_df['emotion.1'].isna()] = 'no_agreement'
                 gold_standard_level = emotion_df.loc[gold_standard.index, 'emotion.level']
+                # Set level to None when there is no agreement
+                gold_standard_level.loc[gold_standard=='no_agreement'] = None
                 gold_standard_agreement = emotion_df.loc[gold_standard.index, 'emotion.agreement']
                 db[f'{new_table_name}.gold_standard'] = audformat.Table(
                     gold_standard.index, split_id=split,
@@ -191,7 +195,9 @@ def main():
                     gold_standard
                 )
                 db[f'{new_table_name}.gold_standard']['emotion.level'] = audformat.Column(
-                    scheme_id='emotion.value', description='Gold standard of the emotion level for the winning emotion.'
+                    scheme_id='emotion.level', description='Gold standard of the emotion level '
+                                                           'for the winning emotion, '
+                                                           'or None if there was more than one winning category.'
                 )
                 db[f'{new_table_name}.gold_standard']['emotion.level'].set(
                     gold_standard_level
