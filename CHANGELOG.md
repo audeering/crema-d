@@ -1,6 +1,19 @@
 Changelog
 =========
 
+Version 1.2.0 (2023/04/06)
+--------------------------
+
+* Added: Tables with vote frequencies
+* Added: Gold standard tables including `no_agreement` samples
+* Added: `files` table to replace `speaker` table with corrupted indicator column
+* Changed: Rename emotion tables to default emotion table names
+* Changed: Rename scheme `emotion.value` to `emotion.level`
+* Changed: Add index `0` to first winning emotion columns
+* Removed: Corrupted file with no audio is removed from index in emotion tables
+* Removed: `speaker` table
+* Removed: `emotion.agreement` column in `emotion.categories.<modality>.<split>`
+
 Version 1.1.1 (2022/03/29)
 --------------------------
 
