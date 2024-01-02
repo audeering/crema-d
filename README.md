@@ -1,4 +1,4 @@
-# CREMA-D
+# crema-d
 
 This project holds code
 to convert the [crema-d] corpus
