@@ -1,7 +1,8 @@
 pandas
 matplotlib
 seaborn
-jupyter 
+scipy
+scikit-learn
 audb
 audeer
 audformat
