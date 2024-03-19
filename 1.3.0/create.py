@@ -1,11 +1,15 @@
-import os
+"""
+Add age.[train|dev|test] tables with speaker information
+consists of randomly selected 20 emotionally neutral samples per speaker
+all tables being age/gender balanced
+"""
+
 import random
 import pandas as pd
 
 import audb
 import audeer
 import audformat
-import audiofile
 import util
 import trainDevTestSplit
 
@@ -78,6 +82,7 @@ def main():
 
     db.save(build_dir)
 
+    print(db)
 
 if __name__ == "__main__":
     main()
