@@ -23,7 +23,7 @@ def main():
     name = "crema-d"
     previous_version = "1.2.0"
 
-    build_dir = "../build"
+    build_dir = "./build"
     build_dir = audeer.mkdir(build_dir)
 
     audb.load_to(
