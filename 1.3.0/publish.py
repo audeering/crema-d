@@ -2,7 +2,7 @@ import audb
 
 previous_version = '1.2.0'
 version = '1.3.0'
-build_dir = '../build'
+build_dir = './build'
 
 repository = audb.Repository(
     name="data-public",
