@@ -6,6 +6,9 @@ all tables being age/gender balanced
 
 import random
 import pandas as pd
+import matplotlib
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 import audb
 import audeer
@@ -50,18 +53,13 @@ def main():
     #    df["duration"] = df.index.to_series().map(lambda x: audiofile.duration(x))
     df = df[df["gender"] != "other"]
     df = df[df["corrupted"] != True]
-    audeer.mkdir(image_dir)
-    util.describe_df(df, f"{image_dir}all.png")
     # make a dataframe for 20 samples per speaker
     df_lim = util.limit_speakers(df)
-    util.describe_df(df_lim, f"{image_dir}limited.png")
     # make a dataframe for emotionally neutral samples
     df["emotion"] = df_emo["emotion.0"].values
     df_neut = df[df.emotion.isin(["neutral"])]
-    util.describe_df(df_neut, f"{image_dir}neutral.png")
     # make a dataframe for emotionally neutral samples , limited to 20 samples
     df_neut_lim = util.limit_speakers(df_neut)
-    util.describe_df(df_neut_lim, f"{image_dir}neutral_limited.png")
 
     # create split sets for samples from all emotions
     splits_emo = {}
@@ -75,11 +73,6 @@ def main():
     splits_neut["train"] = df_train
     splits_neut["dev"] = df_dev
     splits_neut["test"] = df_test
-    # plot distributions
-    for split in splits_emo.keys():
-        print(f"split: {split}")
-        util.describe_df(splits_emo[split], f"{image_dir}{split}.png")
-        util.describe_df(splits_neut[split], f"{image_dir}{split}_neut.png")
 
     # fill the database with new tables
     age_tables_name = "age."
@@ -101,8 +94,23 @@ def main():
             db[f"{age_tables_emotional_name}{split}"][field].set(splits_emo[split][field])
 
     db.save(build_dir)
-
     print(db)
+
+
+
+    print("testing:")
+    res_dir = audeer.mkdir("results")
+    for split in splits_neut.keys():
+        df = db[f"{age_tables_name}{split}"].get()
+        df["gender"] = db["files"]["speaker"].get(map="sex")
+        df["age"] = db["files"]["speaker"].get(map="age").astype("int")
+        sn = df["speaker"].nunique()
+        print(f"new {split}: {df.shape[0]}, {sn}")
+
+        util.distribution(df, split)
+        plt.tight_layout()
+        plt.savefig(f"{res_dir}/{split}.png")
+        plt.close()
 
 if __name__ == "__main__":
     main()

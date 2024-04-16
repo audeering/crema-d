@@ -1,52 +1,29 @@
 import pandas as pd
+import matplotlib
 import matplotlib.pyplot as plt
+import seaborn as sns
 
 num_workers = 8
 
-
-# plot sex distribution, age and duration
-def describe_df(df, file_path):
-    title = f"# samples: {df.shape[0]}, # speakers: {df.speaker.nunique()}"
-    if "duration" in df:
-        fig, axes = plt.subplots(nrows=2, ncols=2)
-        df["age"].plot(kind="hist", ax=axes[0, 0], title="age")
-
-        #    df["duration"].plot(kind="hist", ax=axes[0, 1], title="duration")
-        df.groupby("gender")["speaker"].nunique().plot(kind="pie", ax=axes[1, 0])
-        df_speakers = pd.DataFrame()
-        pd.options.mode.chained_assignment = None  # default='warn'
-        for s in df.speaker.unique():
-            df_speaker = df[df.speaker == s]
-            df_speaker["samplenum"] = df_speaker.shape[0]
-            df_speakers = pd.concat([df_speakers, df_speaker.head(1)])
-        df_speakers["samplenum"].value_counts().sort_values().plot(
-            kind="bar",
-            stacked=True,
-            title=f"samples per speaker",
-            rot=0,
-            ax=axes[1, 1],
-        )
-    else:
-        fig, axes = plt.subplots(nrows=1, ncols=3)
-        df["age"].plot(kind="hist", ax=axes[0], title="age")
-        df.groupby("gender")["speaker"].nunique().plot(kind="pie", ax=axes[1])
-        df_speakers = pd.DataFrame()
-        pd.options.mode.chained_assignment = None  # default='warn'
-        for s in df.speaker.unique():
-            df_speaker = df[df.speaker == s]
-            df_speaker["samplenum"] = df_speaker.shape[0]
-            df_speakers = pd.concat([df_speakers, df_speaker.head(1)])
-        df_speakers["samplenum"].value_counts().sort_values().plot(
-            kind="bar",
-            stacked=True,
-            title=f"samples per speaker",
-            rot=0,
-            ax=axes[2],
-        )
-
-    fig.suptitle(title)
-    plt.tight_layout()
-    fig.savefig(file_path)
+def distribution(df, split):
+    sns.histplot(
+        # df[df.gender == gender]["age"].astype("float32"),
+        data = df,
+        x = "age",
+        hue = "gender",
+        common_bins=False,
+        stat="frequency",
+        kde=True,
+        edgecolor=None,
+        kde_kws={"cut": 3},  # hard code like in distplot()
+    )
+    plt.grid(alpha=0.4)
+    sns.despine()
+    plt.xlabel("age")
+    plt.title(f"Frequency of samples for {split}")
+    # Force y ticks at integer locations
+    ax = plt.gca()
+    ax.yaxis.set_major_locator(matplotlib.ticker.MaxNLocator(integer=True))
 
 
 def limit_speakers(df, max=20):
