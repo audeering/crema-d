@@ -1,7 +1,7 @@
 Changelog
 =========
 
-Version 1.3.0 (2024/03/19)
+Version 1.3.0 (2024/04/17)
 --------------------------
 
 * Added: age.[train|dev|test] tables with speaker information
