@@ -1,6 +1,14 @@
 Changelog
 =========
 
+Version 1.3.0 (2024/04/17)
+--------------------------
+
+* Added: age.[train|dev|test] tables with speaker information
+*   consists of randomly selected 20 emotionally neutral samples per speaker
+*   all tables being age/gender balanced
+
+
 Version 1.2.0 (2023/04/06)
 --------------------------
 
