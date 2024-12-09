@@ -1,5 +1,10 @@
 # crema-d
 
+For further publications of `crema-d`, please go to
+https://github.com/audeering/datasets/tree/main/datasets/crema-d
+
+---
+
 This project holds code
 to convert the [crema-d] corpus
 to [audformat]
